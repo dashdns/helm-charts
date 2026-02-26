@@ -12,13 +12,6 @@ app_repo:    "https://github.com/dashdns/dnsd"
 
 # Charts metadata used in the landing page
 charts:
-  - name: dns-mesh-full
-    title: "DNS Mesh Full"
-    version: "1.0.0"
-    description: "Umbrella chart — installs the complete DashDNS stack (proxy + controller) in a single Helm release."
-    badge_color: "6366f1"
-    icon: "🚀"
-
   - name: dashdns
     title: "DashDNS"
     version: "2.0.2"
