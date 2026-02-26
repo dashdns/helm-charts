@@ -8,6 +8,7 @@ on:
       - "docs/**"
       - "README.md"
       - ".github/workflows/pages.yml"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -94,12 +95,14 @@ jobs:
           mkdir -p "$DST/assets"
           cp -r "$SRC/assets/." "$DST/assets/"
 
+          [ -f "$SRC/artifacthub-repo.yml" ] && cp "$SRC/artifacthub-repo.yml" "$DST/"
+
       - name: Commit and push Jekyll changes
         run: |
           cd gh-pages-out
           git config user.name  "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git add _config.yml index.html _layouts/ _includes/ assets/ 2>/dev/null || true
+          git add _config.yml index.html _layouts/ _includes/ assets/ artifacthub-repo.yml 2>/dev/null || true
           git diff --cached --quiet && echo "No Jekyll changes to push." && exit 0
           git commit -m "chore: sync Jekyll site template from docs/ [skip ci]"
           git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
