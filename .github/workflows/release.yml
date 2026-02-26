@@ -38,6 +38,12 @@ jobs:
         with:
           version: "latest"
 
+      - name: Pre-package sub-charts for umbrella dependency resolution
+        run: |
+          mkdir -p dns-mesh-full/charts
+          helm package dashdns          -d dns-mesh-full/charts/
+          helm package dns-mesh-controller -d dns-mesh-full/charts/
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         with:
