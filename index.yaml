@@ -43,7 +43,7 @@ entries:
     - https://github.com/dashdns/dnsd
     type: application
     urls:
-    - https://dashdns.github.io/helm-charts/.cr-release-packages/dashdns-2.0.2.tgz
+    - https://github.com/dashdns/helm-charts/releases/download/dashdns-2.0.2/dashdns-2.0.2.tgz
     version: 2.0.2
   dns-mesh-controller:
   - apiVersion: v2
