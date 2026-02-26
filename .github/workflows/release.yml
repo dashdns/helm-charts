@@ -43,7 +43,6 @@ jobs:
           mkdir -p dns-mesh-full/charts
           helm package dashdns          -d dns-mesh-full/charts/
           helm package dns-mesh-controller -d dns-mesh-full/charts/
-          helm repo update
           
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
