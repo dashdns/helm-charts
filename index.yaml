@@ -3,6 +3,28 @@ entries:
   dashdns:
   - apiVersion: v2
     appVersion: v1
+    created: "2026-02-26T05:29:33.358469737Z"
+    description: A Helm chart for DashDNS - eBPF-based DNS proxy with XDP/TC filtering
+    digest: 7c2aef3c038d29267b75209bf020c3a7626a86a0bb0ba48e1cdb3910a66e35bc
+    home: https://github.com/dashdns/dnsd
+    keywords:
+    - dns
+    - ebpf
+    - xdp
+    - network
+    - security
+    - filtering
+    maintainers:
+    - name: DashDNS Team
+    name: dashdns
+    sources:
+    - https://github.com/dashdns/dnsd
+    type: application
+    urls:
+    - https://github.com/dashdns/helm-charts/releases/download/dashdns-2.0.3/dashdns-2.0.3.tgz
+    version: 2.0.3
+  - apiVersion: v2
+    appVersion: v1
     created: "2026-02-26T07:40:36.628671+03:00"
     description: A Helm chart for DashDNS - eBPF-based DNS proxy with XDP/TC filtering
     digest: 9e848b6fb6979833f4075c9c2cc4b4aa9028e28cbfad93f098df68673ee3687c
@@ -105,4 +127,4 @@ entries:
     urls:
     - https://dashdns.github.io/helm-charts/.cr-release-packages/dns-mesh-full-1.0.0.tgz
     version: 1.0.0
-generated: "2026-02-26T07:40:36.627205+03:00"
+generated: "2026-02-26T05:29:33.358482861Z"
