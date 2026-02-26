@@ -50,7 +50,7 @@ jobs:
           charts_dir: .          # all charts live at repo root
           skip_existing: true    # don't fail if version already released
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_TOKEN: "${{ secrets.TOKEN }}"
 
   # ──────────────────────────────────────────────────────────
   # Job 2: Sync the Jekyll site template from docs/ on main
