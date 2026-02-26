@@ -51,11 +51,16 @@ helm repo update</code></pre>
     <!-- Step 2 -->
     <div class="step-card">
       <div class="step-num">2</div>
-      <h3>Install the full stack</h3>
+      <h3>Install the charts</h3>
       <div class="code-block">
-        <pre><code class="language-bash">helm install dns-mesh \
-  dashdns/dns-mesh-full \
+        <pre><code class="language-bash">helm install dns-mesh-controller \
+  dashdns/dns-mesh-controller \
   --namespace dns-mesh \
+  --create-namespace
+
+helm install dashdns \
+  dashdns/dashdns \
+  --namespace dashdns \
   --create-namespace</code></pre>
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
@@ -95,8 +100,7 @@ kubectl get deploy \
 <section class="section" id="charts">
   <h2 class="section-title">Available Charts</h2>
   <p class="section-sub">
-    Install the full stack via <strong>dns-mesh-full</strong> (recommended)
-    or deploy each component independently.
+    Deploy each component independently using the charts below.
   </p>
 
   <div class="charts-grid">
@@ -166,33 +170,43 @@ kubectl get deploy \
   </table>
 
   <h3 style="margin: 2rem 0 1rem; font-size:1rem; color:var(--color-text-muted)">
-    Custom values file example
+    Custom values file examples
   </h3>
   <div class="code-block">
-    <pre><code class="language-yaml"># my-values.yaml
-dashdns:
-  dns:
-    interface: eth0
-    upstream: "8.8.8.8:53"
-  prometheus:
-    enabled: true
-
-dns-mesh-controller:
-  controller:
-    replicaCount: 2
-  webhook:
-    certChain:
-      ca:   "BASE64_CA"
-      cert: "BASE64_CERT"
-      key:  "BASE64_KEY"</code></pre>
+    <pre><code class="language-yaml"># dashdns-values.yaml
+dns:
+  interface: eth0
+  upstream: "8.8.8.8:53"
+prometheus:
+  enabled: true</code></pre>
     <button class="copy-btn" onclick="copyCode(this)">Copy</button>
   </div>
 
   <div class="code-block" style="margin-top:1rem">
-    <pre><code class="language-bash">helm install dns-mesh dashdns/dns-mesh-full \
+    <pre><code class="language-bash">helm install dashdns dashdns/dashdns \
+  --namespace dashdns \
+  --create-namespace \
+  -f dashdns-values.yaml</code></pre>
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  </div>
+
+  <div class="code-block" style="margin-top:1.5rem">
+    <pre><code class="language-yaml"># controller-values.yaml
+controller:
+  replicaCount: 2
+webhook:
+  certChain:
+    ca:   "BASE64_CA"
+    cert: "BASE64_CERT"
+    key:  "BASE64_KEY"</code></pre>
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  </div>
+
+  <div class="code-block" style="margin-top:1rem">
+    <pre><code class="language-bash">helm install dns-mesh-controller dashdns/dns-mesh-controller \
   --namespace dns-mesh \
   --create-namespace \
-  -f my-values.yaml</code></pre>
+  -f controller-values.yaml</code></pre>
     <button class="copy-btn" onclick="copyCode(this)">Copy</button>
   </div>
 </section>
@@ -249,15 +263,21 @@ dns-mesh-controller:
   <h3 style="font-size:1rem; margin-bottom:.75rem">Upgrade</h3>
   <div class="code-block">
     <pre><code class="language-bash">helm repo update
-helm upgrade dns-mesh dashdns/dns-mesh-full \
+
+helm upgrade dashdns dashdns/dashdns \
+  --namespace dashdns \
+  -f dashdns-values.yaml
+
+helm upgrade dns-mesh-controller dashdns/dns-mesh-controller \
   --namespace dns-mesh \
-  -f my-values.yaml</code></pre>
+  -f controller-values.yaml</code></pre>
     <button class="copy-btn" onclick="copyCode(this)">Copy</button>
   </div>
 
   <h3 style="font-size:1rem; margin: 1.5rem 0 .75rem">Uninstall</h3>
   <div class="code-block">
-    <pre><code class="language-bash">helm uninstall dns-mesh --namespace dns-mesh</code></pre>
+    <pre><code class="language-bash">helm uninstall dashdns --namespace dashdns
+helm uninstall dns-mesh-controller --namespace dns-mesh</code></pre>
     <button class="copy-btn" onclick="copyCode(this)">Copy</button>
   </div>
 

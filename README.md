@@ -11,7 +11,6 @@ Helm chart repository for the **DNS Mesh** stack — an eBPF-powered DNS proxy a
 |-------|-------------|---------|
 | [`dashdns`](#dashdns) | eBPF-based DNS proxy running as a DaemonSet (XDP/TC filtering) | 2.0.2 |
 | [`dns-mesh-controller`](#dns-mesh-controller) | Kubernetes policy controller + admission webhook | 2.0.3 |
-| [`dns-mesh-full`](#dns-mesh-full-umbrella) | Umbrella chart — installs the full stack in one release | 1.0.0 |
 
 ---
 
@@ -20,91 +19,6 @@ Helm chart repository for the **DNS Mesh** stack — an eBPF-powered DNS proxy a
 ```bash
 helm repo add dashdns https://dashdns.github.io/helm-charts
 helm repo update
-```
-
----
-
-## dns-mesh-full (Umbrella)
-
-The recommended way to deploy the full stack. Installs both `dashdns` and `dns-mesh-controller` in a single Helm release.
-
-### Quick install
-
-```bash
-helm install dns-mesh dashdns/dns-mesh-full \
-  --namespace dns-mesh \
-  --create-namespace
-```
-
-### Install with custom values
-
-```bash
-helm install dns-mesh dashdns/dns-mesh-full \
-  --namespace dns-mesh \
-  --create-namespace \
-  --set dashdns.dns.interface=eth0 \
-  --set dashdns.dns.upstream=8.8.8.8:53 \
-  --set dns-mesh-controller.webhook.certChain.ca="<base64-ca>"
-```
-
-Or use a values file:
-
-```bash
-helm install dns-mesh dashdns/dns-mesh-full \
-  --namespace dns-mesh \
-  --create-namespace \
-  -f my-values.yaml
-```
-
-### Selectively disable components
-
-```bash
-# Install only the controller (no DashDNS daemon)
-helm install dns-mesh dashdns/dns-mesh-full \
-  --set dashdns.enabled=false
-
-# Install only DashDNS (no controller)
-helm install dns-mesh dashdns/dns-mesh-full \
-  --set dns-mesh-controller.enabled=false
-```
-
-### Upgrade
-
-```bash
-helm upgrade dns-mesh dashdns/dns-mesh-full \
-  --namespace dns-mesh \
-  -f my-values.yaml
-```
-
-### Uninstall
-
-```bash
-helm uninstall dns-mesh --namespace dns-mesh
-```
-
-### Values reference
-
-All sub-chart values are namespaced under their chart name. Full defaults are in [`dns-mesh-full/values.yaml`](dns-mesh-full/values.yaml).
-
-```yaml
-dashdns:
-  enabled: true
-  dns:
-    interface: eth0
-    upstream: "1.1.1.1:53"
-    ipBlocklistUrl: "http://dns-mesh-stack-service.default:5959/api/policies"
-    ipBlocklistInterval: "5s"
-
-dns-mesh-controller:
-  enabled: true
-  controller:
-    service:
-      apiPort: 5959
-  webhook:
-    certChain:
-      ca: ""    # base64-encoded CA cert
-      cert: ""  # base64-encoded TLS cert
-      key: ""   # base64-encoded TLS key
 ```
 
 ---
@@ -250,9 +164,8 @@ To release manually:
 
 ```bash
 # Package individual charts
-helm package dashdns           -d .deploy/
+helm package dashdns             -d .deploy/
 helm package dns-mesh-controller -d .deploy/
-helm package dns-mesh-full     -d .deploy/
 
 # Generate / update the index
 helm repo index .deploy/ --url https://dashdns.github.io/helm-charts
@@ -269,23 +182,13 @@ helm repo index .deploy/ --url https://dashdns.github.io/helm-charts
 ```bash
 helm lint dashdns/
 helm lint dns-mesh-controller/
-helm lint dns-mesh-full/
 ```
 
 ### Render templates locally
 
 ```bash
-helm template dns-mesh ./dns-mesh-full/ \
-  --namespace dns-mesh \
-  --debug
-```
-
-### Run with a local dependency
-
-```bash
-# From repo root — use local chart paths instead of the remote repo
-helm dependency build dns-mesh-full/
-helm install dns-mesh dns-mesh-full/ --namespace dns-mesh --create-namespace
+helm template dashdns ./dashdns/ --namespace dashdns --debug
+helm template dns-mesh-controller ./dns-mesh-controller/ --namespace dns-mesh --debug
 ```
 
 ---
