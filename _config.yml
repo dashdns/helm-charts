@@ -1,0 +1,39 @@
+title: "DashDNS Helm Charts"
+description: "eBPF-powered DNS mesh for Kubernetes — proxy, filtering, and policy in one stack."
+url: "https://dashdns.github.io"
+baseurl: "/helm-charts"
+
+# Helm repo endpoint (served from gh-pages root)
+helm_repo_url: "https://dashdns.github.io/helm-charts"
+
+# Source links
+github_repo: "https://github.com/dashdns/helm-charts"
+app_repo:    "https://github.com/dashdns/dnsd"
+
+# Charts metadata used in the landing page
+charts:
+  - name: dashdns
+    title: "DashDNS"
+    version: "2.0.2"
+    description: "eBPF-based DNS proxy running as a DaemonSet. Attaches XDP/TC programs to intercept and filter DNS traffic on every node."
+    badge_color: "0ea5e9"
+    icon: "🛡️"
+
+  - name: dns-mesh-controller
+    title: "DNS Mesh Controller"
+    version: "2.0.3"
+    description: "Kubernetes policy controller managing DNSPolicy CRDs and an admission webhook that annotates pods at creation time."
+    badge_color: "10b981"
+    icon: "⚙️"
+
+# Jekyll settings
+markdown: kramdown
+highlighter: rouge
+plugins:
+  - jekyll-seo-tag
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor

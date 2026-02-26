@@ -1,0 +1,4 @@
+repositoryID: ""   # fill in after adding the repo on artifacthub.io
+owners:
+  - name: DashDNS Team
+    email: "emirozbirdeveloper@gmail.com"        # fill in your email

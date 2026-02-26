@@ -1,0 +1,304 @@
+---
+layout: default
+title: "DashDNS Helm Charts"
+description: "eBPF-powered DNS mesh for Kubernetes — proxy, filtering, and policy in one stack."
+---
+
+<!-- ── Hero ─────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-badge">Helm Chart Repository</div>
+
+  <h1>
+    DNS mesh for<br><span>Kubernetes</span>
+  </h1>
+
+  <p class="hero-sub">
+    eBPF-based DNS proxy with XDP/TC filtering, Kubernetes-native
+    policy controller, and an admission webhook — all packaged as
+    production-ready Helm charts.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#quickstart" class="btn btn-primary">Get started</a>
+    <a href="{{ site.github_repo }}" target="_blank" rel="noopener" class="btn btn-outline">
+      View on GitHub
+    </a>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ── Quickstart ────────────────────────────────────────── -->
+<section class="section" id="quickstart">
+  <h2 class="section-title">Quickstart</h2>
+  <p class="section-sub">Deploy the full DNS mesh stack in three commands.</p>
+
+  <div class="quickstart-grid">
+
+    <!-- Step 1 -->
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <h3>Add the Helm repository</h3>
+      <div class="code-block">
+        <pre><code class="language-bash">helm repo add dashdns \
+  {{ site.helm_repo_url }}
+
+helm repo update</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <h3>Install the charts</h3>
+      <div class="code-block">
+        <pre><code class="language-bash">helm install dns-mesh-controller \
+  dashdns/dns-mesh-controller \
+  --namespace dns-mesh \
+  --create-namespace
+
+helm install dashdns \
+  dashdns/dashdns \
+  --namespace dashdns \
+  --create-namespace</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <h3>Verify the deployment</h3>
+      <div class="code-block">
+        <pre><code class="language-bash"># DashDNS DaemonSet
+kubectl get daemonset \
+  -n dns-mesh
+
+# Controller + Webhook
+kubectl get deploy \
+  -n dns-mesh</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="alert alert-info" style="margin-top:2rem">
+    <span>ℹ️</span>
+    <div>
+      DashDNS requires <strong>privileged pods</strong> on each node to load eBPF programs
+      (<code>SYS_ADMIN</code>, <code>NET_ADMIN</code>, <code>SYS_RESOURCE</code>).
+      Ensure your cluster security policy permits this before installing.
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ── Charts ────────────────────────────────────────────── -->
+<section class="section" id="charts">
+  <h2 class="section-title">Available Charts</h2>
+  <p class="section-sub">
+    Deploy each component independently using the charts below.
+  </p>
+
+  <div class="charts-grid">
+    {% for chart in site.charts %}
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <span class="chart-icon">{{ chart.icon }}</span>
+        <span class="chart-version">v{{ chart.version }}</span>
+      </div>
+      <div>
+        <div class="chart-name">{{ chart.title }}</div>
+        <p class="chart-desc">{{ chart.description }}</p>
+      </div>
+      <div class="chart-install">
+        helm install my-{{ chart.name }} dashdns/{{ chart.name }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ── Configuration ─────────────────────────────────────── -->
+<section class="section" id="configuration">
+  <h2 class="section-title">Key Configuration Values</h2>
+  <p class="section-sub">
+    Pass values with <code>--set</code> or a custom <code>values.yaml</code>.
+    Full reference in each chart's <code>values.yaml</code>.
+  </p>
+
+  <h3 style="margin-bottom:1rem; font-size:1rem; color:var(--color-text-muted)">
+    DashDNS (<code>dashdns.*</code>)
+  </h3>
+  <table class="values-table">
+    <thead>
+      <tr><th>Key</th><th>Default</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>dns.interface</code></td><td><code>eth0</code></td><td>Network interface for XDP/TC attachment</td></tr>
+      <tr><td><code>dns.upstream</code></td><td><code>1.1.1.1:53</code></td><td>Upstream DNS resolver</td></tr>
+      <tr><td><code>dns.blocklist</code></td><td><code>""</code></td><td>Comma-separated global domain blocklist</td></tr>
+      <tr><td><code>dns.ipBlocklistUrl</code></td><td><code>http://…:5959/api/policies</code></td><td>URL to fetch per-IP policy JSON from the controller</td></tr>
+      <tr><td><code>dns.ipBlocklistInterval</code></td><td><code>5s</code></td><td>Policy refresh interval</td></tr>
+      <tr><td><code>service.type</code></td><td><code>NodePort</code></td><td>Kubernetes service type</td></tr>
+      <tr><td><code>service.nodePort</code></td><td><code>30053</code></td><td>NodePort for DNS (UDP/53)</td></tr>
+      <tr><td><code>prometheus.enabled</code></td><td><code>false</code></td><td>Enable Prometheus ServiceMonitor</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin: 2rem 0 1rem; font-size:1rem; color:var(--color-text-muted)">
+    DNS Mesh Controller (<code>dns-mesh-controller.*</code>)
+  </h3>
+  <table class="values-table">
+    <thead>
+      <tr><th>Key</th><th>Default</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>controller.replicaCount</code></td><td><code>1</code></td><td>Number of controller replicas</td></tr>
+      <tr><td><code>controller.service.apiPort</code></td><td><code>5959</code></td><td>Policy REST API port</td></tr>
+      <tr><td><code>webhook.replicas</code></td><td><code>1</code></td><td>Number of admission webhook replicas</td></tr>
+      <tr><td><code>webhook.certChain.ca</code></td><td><code>""</code></td><td>Base64-encoded CA certificate</td></tr>
+      <tr><td><code>webhook.certChain.cert</code></td><td><code>""</code></td><td>Base64-encoded TLS certificate</td></tr>
+      <tr><td><code>webhook.certChain.key</code></td><td><code>""</code></td><td>Base64-encoded TLS private key</td></tr>
+      <tr><td><code>webhook.dns_service.name</code></td><td><code>dnsd-dashdns</code></td><td>DashDNS service the webhook points to</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin: 2rem 0 1rem; font-size:1rem; color:var(--color-text-muted)">
+    Custom values file examples
+  </h3>
+  <div class="code-block">
+    <pre><code class="language-yaml"># dashdns-values.yaml
+dns:
+  interface: eth0
+  upstream: "8.8.8.8:53"
+prometheus:
+  enabled: true</code></pre>
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  </div>
+
+  <div class="code-block" style="margin-top:1rem">
+    <pre><code class="language-bash">helm install dashdns dashdns/dashdns \
+  --namespace dashdns \
+  --create-namespace \
+  -f dashdns-values.yaml</code></pre>
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  </div>
+
+  <div class="code-block" style="margin-top:1.5rem">
+    <pre><code class="language-yaml"># controller-values.yaml
+controller:
+  replicaCount: 2
+webhook:
+  certChain:
+    ca:   "BASE64_CA"
+    cert: "BASE64_CERT"
+    key:  "BASE64_KEY"</code></pre>
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  </div>
+
+  <div class="code-block" style="margin-top:1rem">
+    <pre><code class="language-bash">helm install dns-mesh-controller dashdns/dns-mesh-controller \
+  --namespace dns-mesh \
+  --create-namespace \
+  -f controller-values.yaml</code></pre>
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ── Architecture ──────────────────────────────────────── -->
+<section class="section" id="architecture">
+  <h2 class="section-title">Architecture</h2>
+  <p class="section-sub">
+    DashDNS runs on every node and polls the controller's policy API.
+    The admission webhook annotates pods so the daemon knows which policies apply.
+  </p>
+
+  <div class="arch-section">
+    <pre>
+ ┌─────────────────────────────────────────────────────────────┐
+ │  Kubernetes Node                                            │
+ │                                                             │
+ │  ┌──────────────┐    DNS query    ┌─────────────────────┐  │
+ │  │     Pod      │ ──────────────▶ │      DashDNS        │  │
+ │  │  (annotated) │                 │   eBPF DaemonSet    │  │
+ │  └──────────────┘                 │                     │  │
+ │                                   │  XDP / TC filters   │  │
+ │                                   └──────────┬──────────┘  │
+ │                                              │ policy poll  │
+ └──────────────────────────────────────────────┼─────────────┘
+                                                │
+                                 ┌──────────────▼─────────────┐
+                                 │   dns-mesh-controller       │
+                                 │                             │
+                                 │  ┌─────────────────────┐   │
+                                 │  │  Policy API  :5959  │   │
+                                 │  │  /api/policies      │   │
+                                 │  └─────────────────────┘   │
+                                 │  ┌─────────────────────┐   │
+                                 │  │  Admission Webhook   │   │
+                                 │  │  (pod annotation)    │   │
+                                 │  └─────────────────────┘   │
+                                 │  ┌─────────────────────┐   │
+                                 │  │  DNSPolicy CRD       │   │
+                                 │  └─────────────────────┘   │
+                                 └────────────────────────────┘
+    </pre>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ── Upgrade / Uninstall ───────────────────────────────── -->
+<section class="section" id="lifecycle">
+  <h2 class="section-title">Upgrade &amp; Uninstall</h2>
+
+  <h3 style="font-size:1rem; margin-bottom:.75rem">Upgrade</h3>
+  <div class="code-block">
+    <pre><code class="language-bash">helm repo update
+
+helm upgrade dashdns dashdns/dashdns \
+  --namespace dashdns \
+  -f dashdns-values.yaml
+
+helm upgrade dns-mesh-controller dashdns/dns-mesh-controller \
+  --namespace dns-mesh \
+  -f controller-values.yaml</code></pre>
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  </div>
+
+  <h3 style="font-size:1rem; margin: 1.5rem 0 .75rem">Uninstall</h3>
+  <div class="code-block">
+    <pre><code class="language-bash">helm uninstall dashdns --namespace dashdns
+helm uninstall dns-mesh-controller --namespace dns-mesh</code></pre>
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  </div>
+
+  <div class="alert alert-warn" style="margin-top:1.5rem">
+    <span>⚠️</span>
+    <div>
+      CRDs installed by <code>dns-mesh-controller</code> are <strong>not</strong> removed
+      on <code>helm uninstall</code>. Delete them manually if needed:<br>
+      <code>kubectl delete crd dnspolicies.dashdns.io</code>
+    </div>
+  </div>
+</section>
+
+<!-- ── Copy-button script ─────────────────────────────────── -->
+<script>
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('pre code');
+  navigator.clipboard.writeText(code.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
