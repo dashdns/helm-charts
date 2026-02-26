@@ -1,0 +1,32 @@
+apiVersion: v2
+name: dns-mesh-full
+description: |
+  Full DNS Mesh stack - bundles DashDNS (eBPF-based DNS proxy) and
+  dns-mesh-controller (Kubernetes policy controller) into a single release.
+type: application
+version: 1.0.0
+appVersion: "2.0.3"
+keywords:
+  - dns
+  - ebpf
+  - xdp
+  - network
+  - security
+  - filtering
+  - policy
+  - mesh
+maintainers:
+  - name: DashDNS Team
+home: https://github.com/dashdns/helm-charts
+sources:
+  - https://github.com/dashdns/dnsd
+  - https://github.com/dashdns/helm-charts
+dependencies:
+  - name: dashdns
+    version: "2.0.2"
+    repository: "https://dashdns.github.io/helm-charts"
+    condition: dashdns.enabled
+  - name: dns-mesh-controller
+    version: "2.0.3"
+    repository: "https://dashdns.github.io/helm-charts"
+    condition: dns-mesh-controller.enabled

@@ -1,0 +1,105 @@
+name: Release Helm Charts
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - ".github/workflows/pages.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  # ──────────────────────────────────────────────────────────
+  # Job 1: Package changed charts and publish GitHub releases.
+  # chart-releaser-action detects which charts changed since
+  # the last tagged release, packages them, creates a GitHub
+  # Release for each, and updates index.yaml on gh-pages.
+  # ──────────────────────────────────────────────────────────
+  release-charts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history needed by chart-releaser
+
+      - name: Configure Git
+        run: |
+          git config user.name  "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.6.0
+        with:
+          charts_dir: .          # all charts live at repo root
+          skip_existing: true    # don't fail if version already released
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+  # ──────────────────────────────────────────────────────────
+  # Job 2: Sync the Jekyll site template from docs/ on main
+  # into the gh-pages branch, without touching index.yaml or
+  # any chart .tgz files that chart-releaser wrote.
+  # ──────────────────────────────────────────────────────────
+  sync-jekyll-template:
+    runs-on: ubuntu-latest
+    needs: release-charts
+    steps:
+      - name: Checkout main (Jekyll source)
+        uses: actions/checkout@v4
+        with:
+          path: main-src
+
+      - name: Checkout gh-pages (Helm repo target)
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages-out
+        # If gh-pages doesn't exist yet the step below initialises it
+        continue-on-error: true
+
+      - name: Initialise gh-pages branch if it does not exist
+        run: |
+          if [ ! -d gh-pages-out/.git ]; then
+            mkdir gh-pages-out
+            cd gh-pages-out
+            git init
+            git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+            git checkout -b gh-pages
+          fi
+
+      - name: Sync Jekyll template files
+        run: |
+          SRC=main-src/docs
+          DST=gh-pages-out
+
+          cp "$SRC/_config.yml"    "$DST/"
+          cp "$SRC/index.html"     "$DST/"
+
+          mkdir -p "$DST/_layouts"
+          cp -r "$SRC/_layouts/." "$DST/_layouts/"
+
+          mkdir -p "$DST/_includes"
+          [ -d "$SRC/_includes" ] && cp -r "$SRC/_includes/." "$DST/_includes/"
+
+          mkdir -p "$DST/assets"
+          cp -r "$SRC/assets/." "$DST/assets/"
+
+      - name: Commit and push Jekyll changes
+        run: |
+          cd gh-pages-out
+          git config user.name  "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git add _config.yml index.html _layouts/ _includes/ assets/ 2>/dev/null || true
+          git diff --cached --quiet && echo "No Jekyll changes to push." && exit 0
+          git commit -m "chore: sync Jekyll site template from docs/ [skip ci]"
+          git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages

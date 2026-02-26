@@ -1,0 +1,135 @@
+# dns-mesh-full umbrella chart values
+# Override individual sub-chart values under their respective keys.
+
+# -- Enable/disable the DashDNS daemon sub-chart
+dashdns:
+  enabled: true
+
+  revisionHistoryLimit: 3
+
+  image:
+    repository: emirozbir/dnsd
+    tag: "v2.0.3"
+    pullPolicy: IfNotPresent
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  prometheus:
+    metrics:
+      port: 9090
+      metrics: "TCP"
+    enabled: false
+    serviceMonitorDiscoverLabels:
+      release: prometheus-operator
+
+  dns:
+    interface: "eth0"
+    upstream: "1.1.1.1:53"
+    blocklist: ""
+    blockIps: ""
+    blockedDns: ""
+    ipBlocklist: ""
+    # Points to the controller API service exposed by dns-mesh-controller
+    ipBlocklistUrl: "http://dns-mesh-stack-service.default:5959/api/policies"
+    ipBlocklistInterval: "5s"
+
+  extraArgs: []
+
+  podSecurityContext: {}
+
+  securityContext:
+    privileged: true
+    capabilities:
+      add:
+        - SYS_ADMIN
+        - NET_ADMIN
+        - SYS_RESOURCE
+
+  service:
+    enabled: true
+    type: NodePort
+    port: 53
+    nodePort: 30053
+    protocol: UDP
+
+  resources: {}
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+  podLabels: {}
+  priorityClassName: ""
+  hostNetwork: false
+  dnsPolicy: ClusterFirst
+  terminationGracePeriodSeconds: 30
+
+# -- Enable/disable the DNS Mesh Controller sub-chart
+dns-mesh-controller:
+  enabled: true
+
+  webhook:
+    image:
+      repository: emirozbir/dashdns-admission-webhook
+      tag: "v2.0.3"
+      pullPolicy: Always
+    replicas: 1
+    dns_service:
+      name: dnsd-dashdns
+      namespace: "default"
+    certChain:
+      ca: ""
+      cert: ""
+      key: ""
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 64Mi
+
+  controller:
+    replicaCount: 1
+    image:
+      repository: emirozbir/dashdns-controller
+      pullPolicy: Always
+      tag: "v2.0.3"
+
+    imagePullSecrets: []
+    nameOverride: ""
+    fullnameOverride: ""
+    podAnnotations: {}
+    podLabels: {}
+    podSecurityContext: {}
+    securityContext: {}
+
+    service:
+      type: ClusterIP
+      port: 8443
+      apiPort: 5959
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 64Mi
+
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
