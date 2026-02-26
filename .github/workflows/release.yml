@@ -46,7 +46,7 @@ jobs:
           charts_dir: .          # discovers dashdns/ and dns-mesh-controller/
           skip_existing: true    # don't fail if version already released
         env:
-          CR_TOKEN: "${{ secrets.TOKEN }}"
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
   # ──────────────────────────────────────────────────────────
   # Job 2: Sync the Jekyll site template from docs/ on main
