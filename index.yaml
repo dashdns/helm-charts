@@ -70,6 +70,16 @@ entries:
   dns-mesh-controller:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2026-02-27T05:10:05.879911589Z"
+    description: A Helm chart for Kubernetes
+    digest: e327e2a4d43dc4cd9a0a16ac6201f04bfe3c98d866725cfa86e69af4c5953b67
+    name: dns-mesh-controller
+    type: application
+    urls:
+    - https://github.com/dashdns/helm-charts/releases/download/dns-mesh-controller-2.0.5/dns-mesh-controller-2.0.5.tgz
+    version: 2.0.5
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2026-02-27T02:46:55.010545128Z"
     description: A Helm chart for Kubernetes
     digest: 2e69269cbd0a1ae4e6060ca76482178b0a16ab20e9e569c062c9a83257ff07d2
@@ -88,4 +98,4 @@ entries:
     urls:
     - https://github.com/dashdns/helm-charts/releases/download/dns-mesh-controller-2.0.3/dns-mesh-controller-2.0.3.tgz
     version: 2.0.3
-generated: "2026-02-27T02:46:55.010567219Z"
+generated: "2026-02-27T05:10:05.87993373Z"
