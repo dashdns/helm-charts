@@ -64,6 +64,9 @@ spec:
             {{- if .Values.dns.ipBlocklistInterval }}
             - "-ip-blocklist-interval={{ .Values.dns.ipBlocklistInterval }}"
             {{- end }}
+            {{- if .Values.dns.ipam }}
+            - "-ipam={{ .Values.dns.ipam }}"
+            {{- end }}
             {{- range .Values.extraArgs }}
             - {{ . | quote }}
             {{- end }}
