@@ -23,6 +23,7 @@ prometheus:
 
 # DNS configuration
 dns:
+  ipam: "onpremise"
   # Network interface to attach XDP/TC programs
   interface: "eth0"
   # Upstream DNS server
