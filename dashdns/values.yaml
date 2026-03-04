@@ -6,7 +6,7 @@ revisionHistoryLimit: 3
 
 image:
   repository: emirozbir/dnsd
-  tag: "v2.0.3"
+  tag: "v2.0.5"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -23,7 +23,7 @@ prometheus:
 
 # DNS configuration
 dns:
-  ipam: "onpremise"
+  ipam: "aws-vpc-cni"
   # Network interface to attach XDP/TC programs
   interface: "eth0"
   # Upstream DNS server
@@ -37,7 +37,7 @@ dns:
   # Per-IP blocklist in format: IP1:domain1,domain2;IP2:domain3
   ipBlocklist: ""
   # URL to fetch per-IP blocklist from (JSON format)
-  ipBlocklistUrl: "http://dns-mesh-stack-service.default:5959/api/policies"
+  ipBlocklistUrl: "http://dns-mesh-controller-service.default:5959/api/policies"
   # Interval to refresh the remote IP blocklist
   ipBlocklistInterval: "5s"
 
@@ -110,7 +110,7 @@ priorityClassName: ""
 hostNetwork: false
 
 # DNS policy (ClusterFirst, Default, ClusterFirstWithHostNet, None)
-dnsPolicy: ClusterFirst
+dnsPolicy: ClusterFirstWithHostNet
 
 # Termination grace period
 terminationGracePeriodSeconds: 30

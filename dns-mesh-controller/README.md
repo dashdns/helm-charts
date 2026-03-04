@@ -49,6 +49,10 @@ helm install dns-mesh-controller dashdns/dns-mesh-controller \
   --set webhook.certChain.key="$(cat tls.key | base64)"
 ```
 
+```bash
+Quick Hint; Please do not forget to run ./webhook/scripts/generate-certs.sh script to generate certificate chain on controller project.
+```
+
 ## Architecture
 
 ```
