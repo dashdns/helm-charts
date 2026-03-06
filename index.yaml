@@ -3,6 +3,28 @@ entries:
   dashdns:
   - apiVersion: v2
     appVersion: v1
+    created: "2026-03-06T20:49:08.055640185Z"
+    description: A Helm chart for DashDNS - eBPF-based DNS proxy with XDP/TC filtering
+    digest: 7675706107e7e32e69a912ca6e6b636600c0ed233e44310917ab29eca11a76e9
+    home: https://github.com/dashdns/dnsd
+    keywords:
+    - dns
+    - ebpf
+    - xdp
+    - network
+    - security
+    - filtering
+    maintainers:
+    - name: DashDNS Team
+    name: dashdns
+    sources:
+    - https://github.com/dashdns/dnsd
+    type: application
+    urls:
+    - https://github.com/dashdns/helm-charts/releases/download/dashdns-2.0.7/dashdns-2.0.7.tgz
+    version: 2.0.7
+  - apiVersion: v2
+    appVersion: v1
     created: "2026-03-04T05:08:24.715529875Z"
     description: A Helm chart for DashDNS - eBPF-based DNS proxy with XDP/TC filtering
     digest: 3b65c2bf8d211278ab8a6ae2257449a69f4fe59595e2ccfadb4566ceac8426fb
@@ -92,6 +114,16 @@ entries:
   dns-mesh-controller:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2026-03-06T20:49:08.194575964Z"
+    description: A Helm chart for Kubernetes
+    digest: 884e8eef18a2e9fe4da94493553ce9c974b5b9b176d1c94d5d0dc02be23eaad2
+    name: dns-mesh-controller
+    type: application
+    urls:
+    - https://github.com/dashdns/helm-charts/releases/download/dns-mesh-controller-2.0.7/dns-mesh-controller-2.0.7.tgz
+    version: 2.0.7
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2026-03-04T05:08:24.947041395Z"
     description: A Helm chart for Kubernetes
     digest: 56e1fb278e50689c46fbc5e53d356a579cffe5b2dabe2617a72de442bb8ecb11
@@ -130,4 +162,4 @@ entries:
     urls:
     - https://github.com/dashdns/helm-charts/releases/download/dns-mesh-controller-2.0.3/dns-mesh-controller-2.0.3.tgz
     version: 2.0.3
-generated: "2026-03-04T05:08:24.947066272Z"
+generated: "2026-03-06T20:49:08.194620928Z"
