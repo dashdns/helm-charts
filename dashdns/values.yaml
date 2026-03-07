@@ -63,6 +63,7 @@ service:
   port: 53
   nodePort: 30053
   protocol: UDP
+  internalTrafficPolicy: Local
 
 # Resource limits and requests
 resources: {}

@@ -13,6 +13,7 @@ spec:
     - name: dns-udp
       port: {{ .Values.service.port }}
       targetPort: dns-udp
+      internalTrafficPolicy: {{.Values.service.internalTrafficPolicy}}
       protocol: {{ .Values.service.protocol }}
       {{- if and (eq .Values.service.type "NodePort") .Values.service.nodePort }}
       nodePort: {{ .Values.service.nodePort }}
